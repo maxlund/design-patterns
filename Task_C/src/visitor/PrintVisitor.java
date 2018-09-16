@@ -1,11 +1,13 @@
 package visitor;
 
-import java.text.MessageFormat;
-
 public class PrintVisitor extends Visitor {
 
 	private StringBuilder expressionString = new StringBuilder();
 	private boolean isSubExpression;
+	
+	public PrintVisitor() {
+		this.isSubExpression = false;
+	}
 	
 	public PrintVisitor(boolean isSubExpression) {
 		this.isSubExpression = isSubExpression;

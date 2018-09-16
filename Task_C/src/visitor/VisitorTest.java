@@ -24,8 +24,8 @@ public class VisitorTest {
 		System.out.println(MessageFormat.format(
 				"There were {0} variables in the expression", v.getCount()));
 		
-		// PrintVisitors toString() prints the expression.. we need to get parentheses though
-		PrintVisitor pv = new PrintVisitor(false);
+		// PrintVisitors toString() prints the expression that PrintVisitor holds after visit() is called through expressions accept()
+		PrintVisitor pv = new PrintVisitor();
 		expression.accept(pv);
 		System.out.println(pv.toString());
 	}
