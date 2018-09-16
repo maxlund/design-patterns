@@ -5,6 +5,11 @@ import java.text.MessageFormat;
 public class PrintVisitor extends Visitor {
 
 	private StringBuilder expressionString = new StringBuilder();
+	private boolean isSubExpression;
+	
+	public PrintVisitor(boolean isSubExpression) {
+		this.isSubExpression = isSubExpression;
+	}
 	
 	@Override
 	public String toString() {
@@ -37,8 +42,12 @@ public class PrintVisitor extends Visitor {
 	
 	private void visit(CompoundExpression exp, String op) {
 	
-		PrintVisitor pv1 = new PrintVisitor();
-		PrintVisitor pv2 = new PrintVisitor();
+		// add parenthesis if this is a compound expression within another compound expression
+		if (isSubExpression)
+			expressionString.append("(");
+		
+		PrintVisitor pv1 = new PrintVisitor(true);
+		PrintVisitor pv2 = new PrintVisitor(true);
 		
 		// accept calls visit() with PrintVisitor on leftOperand, putting the leftOperand in that PrintVisitors expressionString
 		exp.leftOperand.accept(pv1);
@@ -53,5 +62,9 @@ public class PrintVisitor extends Visitor {
 		// do the same for rightOperand
 		exp.rightOperand.accept(pv2);
 		expressionString.append(pv2.toString());
+		
+		// add parenthesis if this is a compound expression within another compound expression
+		if (isSubExpression)
+			expressionString.append(")");
 	}
 }

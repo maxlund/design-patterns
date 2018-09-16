@@ -24,9 +24,8 @@ public class VisitorTest {
 		System.out.println(MessageFormat.format(
 				"There were {0} variables in the expression", v.getCount()));
 		
-		// when visit() is called on PrintVisitor, and *this* is a Sum expression, should we just print '+' ?
-		// if so, it's correct..
-		PrintVisitor pv = new PrintVisitor();
+		// PrintVisitors toString() prints the expression.. we need to get parentheses though
+		PrintVisitor pv = new PrintVisitor(false);
 		expression.accept(pv);
 		System.out.println(pv.toString());
 	}
