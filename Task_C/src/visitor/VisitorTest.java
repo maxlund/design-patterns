@@ -26,6 +26,8 @@ public class VisitorTest {
 		
 		// when visit() is called on PrintVisitor, and *this* is a Sum expression, should we just print '+' ?
 		// if so, it's correct..
-		expression.accept(new PrintVisitor());
+		PrintVisitor pv = new PrintVisitor();
+		expression.accept(pv);
+		System.out.println(pv.toString());
 	}
 }
