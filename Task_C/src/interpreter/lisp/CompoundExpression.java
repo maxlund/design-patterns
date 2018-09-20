@@ -6,7 +6,7 @@ import java.util.List;
 public class CompoundExpression implements Expr {
 
 	private List<Expr> elements = new ArrayList<Expr>();
-
+	
 	public void add(Expr node) {
 		elements.add(node);
 	}
@@ -15,18 +15,22 @@ public class CompoundExpression implements Expr {
 		return elements;
 	}
 
+	public void initialize(List<Expr> params) {
+	
+	}
+	
 	public Expr evaluate(Context context) {
 		if (elements.isEmpty()) {
 			return Constants.EMPTY_LIST;
 		}
 		if (elements.get(0) instanceof Symbol) {
-			String keyword = ((Symbol) elements.get(0)).getValue();
-			if (keyword.equals("def")) {
-				return new CompoundFunction(elements.get(1), elements.get(2),
-						elements.get(3)).evaluate(context);
-			} else if (keyword.equals("if")) {
-				return new Conditional(elements.get(1), elements.get(2),
-						elements.get(3)).evaluate(context);
+			Symbol keyword = (Symbol) elements.get(0);
+			
+			CompoundExpression op = (CompoundExpression) OperationsMap.get(keyword);
+			
+			if (op != null) {
+				op.initialize(elements.subList(1,elements.size()));
+				return op.evaluate(context);
 			}
 		}
 		return new FunctionCall((Symbol) elements.get(0),elements.subList(1,elements.size())).evaluate(context);

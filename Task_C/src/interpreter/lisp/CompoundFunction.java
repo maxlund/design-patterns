@@ -9,19 +9,21 @@ public class CompoundFunction extends CompoundExpression implements Fun {
 	private Symbol name;
 	private Expr body;
 
-	public CompoundFunction(Expr name, Expr parameters, Expr body) {
-		this.name = (Symbol) name;
-		List<Expr> elts = ((CompoundExpression) parameters).getElements();
+
+	@Override
+	public void initialize(List<Expr> params) {
+		this.name = (Symbol) params.get(0);
+		List<Expr> elts = ((CompoundExpression) params.get(1)).getElements();
 		List<Symbol> paramNames = new ArrayList<Symbol>();
 		for (Expr node : elts) {
 			paramNames.add((Symbol) node);
 		}
 
 		this.parameters = paramNames;
-		this.body = body;
+		this.body = params.get(2);
 
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see interpreter.lisp.Fun#getParameters()
 	 */

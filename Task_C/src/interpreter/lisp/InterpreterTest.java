@@ -25,9 +25,19 @@ public class InterpreterTest {
 		 */
 
 		Expr result = expr.evaluate(Context.getTopLevelContext());
+		System.out.println(result);
+		
+		expr = Reader
+				.read("(case (* 1 1) ((* 2 4) 0) (3 1) (1 (fac 3)))");
+//		System.out.println(expr);
+//		
+		result = expr.evaluate(Context.getTopLevelContext());
+		System.out.println(result);
+
 		Expr expr2 = Reader.read("(fac 5)"); // fac(5) in Python
 		result = expr2.evaluate(Context.getTopLevelContext());
 		System.out.println(result);
+
 	}
 
 }

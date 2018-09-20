@@ -5,6 +5,8 @@ import java.util.HashMap;
 public class Context {
 
 	public HashMap<Symbol, Expr> bindings = new HashMap<Symbol, Expr>();
+	public HashMap<Symbol, Expr> operations = new HashMap<Symbol, Expr>();
+	
 	private Context parent;
 
 	private static Context topLevelContext = new Context();
@@ -15,6 +17,10 @@ public class Context {
 		bindings.put(new Symbol("*"), new Mult());
 		bindings.put(new Symbol("-"), new Sub());
 		// Add new top level bindings here
+		
+		operations.put(new Symbol("def"), new CompoundFunction());
+		operations.put(new Symbol("if"), new Conditional());
+		operations.put(new Symbol("case"), new Case());
 	}
 	
 	public Context(Context parent) {
@@ -29,6 +35,12 @@ public class Context {
 		return value;
 	}
 
+	public Expr getOperation(Symbol var) {
+		Expr value = operations.get(var);
+
+		return value;
+	}
+	
 	public void put(Symbol key, Expr value) {
 		bindings.put(key, value);
 	}

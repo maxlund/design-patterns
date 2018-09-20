@@ -1,17 +1,21 @@
 package interpreter.lisp;
 
+import java.util.List;
+
 public class Conditional extends CompoundExpression {
 
 	private Expr condition;
 	private Expr consequent;
 	private Expr antecedent;
 
-	public Conditional(Expr condition, Expr consequent, Expr antecedent) {
-		this.condition = condition;
-		this.consequent = consequent;
-		this.antecedent = antecedent;
-	}
 
+	@Override
+	public void initialize(List<Expr> params) {
+		this.condition = params.get(0);
+		this.consequent = params.get(1);
+		this.antecedent = params.get(2);
+	}
+	
 	public Expr getCondition() {
 		return condition;
 	}
