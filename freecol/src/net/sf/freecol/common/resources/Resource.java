@@ -100,5 +100,5 @@ public abstract class Resource implements Cloneable {
     
     public boolean matchURI(URI uri) { return false; }
     
-    public void initialize(URI uri) {}
+    public void initialize(URI uri) throws Exception {}
 }

@@ -45,18 +45,6 @@ public class ResourceFactory {
         if(rmap.containsKey(key))
             return;
         
-        // test
-        Resource cr_prototype = new ColorResource();
-        try {
-        	if (cr_prototype.matchURI(uri)) {
-        		Resource concrete_prototype = cr_prototype.clone();
-        		concrete_prototype.initialize(uri);
-        		rmap.add(key, concrete_prototype);
-        	}
-        } catch (Exception e) {
-            logger.log(Level.WARNING, "Failed to create resource with URI: " + uri, e);
-        }
-        
         try {
         	
             if ("urn".equals(uri.getScheme())) {

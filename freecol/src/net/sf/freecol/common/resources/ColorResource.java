@@ -48,17 +48,6 @@ public class ColorResource extends Resource {
     }
 
     public ColorResource() {}
-    /**
-     * Do not use directly.
-     *
-     * @param resourceLocator The <code>URI</code> used when loading this
-     *     resource.
-     */
-    public ColorResource(URI uri) throws Exception {
-    	this.initialize(uri);
-    }
-    
-
 
     /**
      * Gets the <code>Color</code> represented by this resource.
@@ -123,10 +112,10 @@ public class ColorResource extends Resource {
     }
     
     @Override 
-    public void initialize(URI uri) {
-    	setResourceLocator(uri);
-        String colorName = uri.getSchemeSpecificPart()
-                .substring(SCHEME.length());
+    public void initialize(URI resourceLocator) {
+    	setResourceLocator(resourceLocator);
+        String colorName = resourceLocator.getSchemeSpecificPart()
+                .substring(ColorResource.SCHEME.length());
             this.color = getColor(colorName);
     }
 }

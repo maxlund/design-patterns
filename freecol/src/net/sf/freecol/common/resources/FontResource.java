@@ -52,33 +52,7 @@ public class FontResource extends Resource {
      * @param resourceLocator The <code>URI</code> used when loading this
      *      resource.
      */
-    public FontResource(URI resourceLocator) throws Exception {
-        super(resourceLocator);
-        font = null;
-        try {
-            if (resourceLocator.getPath() != null
-                && resourceLocator.getPath().endsWith(".ttf")) {
-                URL url = resourceLocator.toURL();
-                font = Font.createFont(Font.TRUETYPE_FONT, url.openStream());
-            } else {
-                String name = resourceLocator.getSchemeSpecificPart();
-                font = Font.decode(name.substring(SCHEME.length()));
-            }
-
-            if (font != null) {
-                GraphicsEnvironment.getLocalGraphicsEnvironment()
-                    .registerFont(font);
-            }
-
-            logger.info("Loaded font: " + font.getFontName()
-                + " from: " + resourceLocator);
-        } catch(Exception e) {
-            logger.log(Level.WARNING,
-                "Failed loading font from: " + resourceLocator, e);
-            throw e;
-        }
-    }
-
+    public FontResource() {}
 
     /**
      * Gets the <code>Font</code> represented by this resource.  As
@@ -106,5 +80,40 @@ public class FontResource extends Resource {
     public static Font getEmergencyFont() {
         logger.warning("Using emergency font");
         return Font.decode(null);
+    }
+    
+    @Override
+    public boolean matchURI(URI uri) {
+    	return ("urn".equals(uri.getScheme()) 
+    			&& uri.getSchemeSpecificPart().startsWith(FontResource.SCHEME))
+    			|| uri.getPath().endsWith(".ttf");
+    }
+    
+    @Override 
+    public void initialize(URI resourceLocator) throws Exception {
+    	setResourceLocator(resourceLocator);
+    	font = null;
+        try {
+            if (resourceLocator.getPath() != null
+                && resourceLocator.getPath().endsWith(".ttf")) {
+                URL url = resourceLocator.toURL();
+                font = Font.createFont(Font.TRUETYPE_FONT, url.openStream());
+            } else {
+                String name = resourceLocator.getSchemeSpecificPart();
+                font = Font.decode(name.substring(FontResource.SCHEME.length()));
+            }
+
+            if (font != null) {
+                GraphicsEnvironment.getLocalGraphicsEnvironment()
+                    .registerFont(font);
+            }
+
+            logger.info("Loaded font: " + font.getFontName()
+                + " from: " + resourceLocator);
+        } catch(Exception e) {
+            logger.log(Level.WARNING,
+                "Failed loading font from: " + resourceLocator, e);
+            throw e;
+        }
     }
 }

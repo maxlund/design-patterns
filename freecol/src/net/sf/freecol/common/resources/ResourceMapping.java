@@ -21,7 +21,6 @@ package net.sf.freecol.common.resources;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -41,7 +40,7 @@ public final class ResourceMapping {
     /** Mappings between an object identifier and a resource. */    
     private final HashMap<String, Resource> allResources;
 
-    private final Set<String> resourceStrings;  // stuff that resource identifiers starts with
+    private final List<String> resourceStrings;  // stuff that resource identifiers starts with
     
     /**
      * Creates a new empty <code>ResourceMapping</code>.
@@ -49,7 +48,7 @@ public final class ResourceMapping {
     public ResourceMapping() {
     	allResources = new HashMap<>();
     	// if we don't want to break the logging, we need to have something like this i think
-    	resourceStrings = new HashSet<>(Arrays.asList(
+    	resourceStrings = Arrays.asList(
     			"color.", 
     			"font.", 
     			"animatedfont.",
@@ -57,7 +56,7 @@ public final class ResourceMapping {
     			"sound.", 
     			"video.", 
     			"image."
-    			));
+    			);
     }
 
 

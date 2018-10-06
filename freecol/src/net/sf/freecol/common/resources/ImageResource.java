@@ -56,9 +56,7 @@ public class ImageResource extends Resource
      * @param resourceLocator The <code>URI</code> used when loading this
      *      resource.
      */
-    public ImageResource(URI resourceLocator) {
-        super(resourceLocator);
-    }
+    public ImageResource() {}
 
 
     /**
@@ -223,5 +221,15 @@ public class ImageResource extends Resource
 
     public int getCount() {
         return grayscaleImages.size() + scaledImages.size();
+    }
+    
+    @Override
+    public boolean matchURI(URI uri) {
+    	return true;
+    }
+    
+    @Override 
+    public void initialize(URI resourceLocator) {
+    	setResourceLocator(resourceLocator);
     }
 }

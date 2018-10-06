@@ -49,9 +49,7 @@ public class SZAResource extends Resource implements Resource.Preloadable {
      * @param resourceLocator The <code>URI</code> used when loading this
      *     resource.
      */
-    public SZAResource(URI resourceLocator) {
-        super(resourceLocator);
-    }
+    public SZAResource() {}
 
 
     /**
@@ -110,5 +108,15 @@ public class SZAResource extends Resource implements Resource.Preloadable {
             = sza.createScaledVersion(scale);
         scaledSzAnimations.put(scale, scaledVersion);
         return scaledVersion;
+    }
+    
+    @Override
+    public boolean matchURI(URI uri) {
+    	return uri.getPath().endsWith(".sza");
+    }
+    
+    @Override 
+    public void initialize(URI resourceLocator) {
+    	setResourceLocator(resourceLocator);
     }
 }

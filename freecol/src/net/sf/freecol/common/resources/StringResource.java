@@ -36,19 +36,7 @@ public class StringResource extends Resource {
      * @param resourceLocator The <code>URI</code> used when loading this
      *      resource.
      */
-    public StringResource(URI resourceLocator) {
-        super(resourceLocator);
-
-        this.data = resourceLocator.getPath();
-        if (this.data.endsWith("\"")) { // Should always be true
-            this.data = this.data.substring(0, this.data.length()-1);
-        }
-        int idx = this.data.lastIndexOf('"');
-        if (idx > 0) {
-            this.data = this.data.substring(idx+1);
-        }
-    }
-
+    public StringResource() {}
 
     /**
      * Gets the <code>String</code> represented by this resource.
@@ -57,5 +45,25 @@ public class StringResource extends Resource {
      */
     public String getString() {
         return this.data;
+    }
+    
+    @Override
+    public boolean matchURI(URI uri) {
+    	return uri.getPath().endsWith("\"")
+                && uri.getPath().lastIndexOf('"',
+                        uri.getPath().length()-1) >= 0;
+    }
+    
+    @Override 
+    public void initialize(URI resourceLocator) {
+    	setResourceLocator(resourceLocator);
+    	this.data = resourceLocator.getPath();
+        if (this.data.endsWith("\"")) { // Should always be true
+            this.data = this.data.substring(0, this.data.length()-1);
+        }
+        int idx = this.data.lastIndexOf('"');
+        if (idx > 0) {
+            this.data = this.data.substring(idx+1);
+        }
     }
 }

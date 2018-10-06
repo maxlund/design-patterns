@@ -45,11 +45,7 @@ public class AudioResource extends Resource {
      *      resource.
      * @throws Exception of assorted types from the underlying audio components
      */
-    public AudioResource(URI resourceLocator) throws Exception {
-        super(resourceLocator);
-        File f = new File(resourceLocator);
-        if (SoundPlayer.getAudioInputStream(f) != null) this.file = f;
-    }
+    public AudioResource() {}
 
 
     /**
@@ -59,5 +55,18 @@ public class AudioResource extends Resource {
      */
     public File getAudio() {
         return file;
+    }
+    
+    @Override
+    public boolean matchURI(URI uri) {
+    	return uri.getPath().endsWith(".wav")
+    			|| (uri.getPath().endsWith(".ogg") && !uri.getPath().endsWith(".video.ogg"));
+    }
+    
+    @Override 
+    public void initialize(URI resourceLocator) throws Exception {
+    	setResourceLocator(resourceLocator);
+        File f = new File(resourceLocator);
+        if (SoundPlayer.getAudioInputStream(f) != null) this.file = f;
     }
 }
