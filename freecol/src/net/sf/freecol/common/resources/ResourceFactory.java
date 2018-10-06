@@ -20,6 +20,8 @@
 package net.sf.freecol.common.resources;
 
 import java.net.URI;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,6 +33,21 @@ public class ResourceFactory {
 
     private static final Logger logger = Logger.getLogger(ResourceFactory.class.getName());
 
+    private static final List<Resource> resourcePrototypes = Arrays.asList(
+    		new ColorResource(),
+    		new FontResource(),
+    		new StringResource(),
+    		new FAFileResource(),
+    		new SZAResource(),
+    		new AudioResource(),
+    		new VideoResource()
+    		);
+    
+    // since the base case when the URI doesn't match anything is to create an ImageResource object,
+    // perhaps this should be kept from without the list resourcePrototypes to better allow for extension?
+    // if we by mistake added something after the ImageResource prototype in the list, it would never get called.
+    private static final ImageResource imageResourcePrototype = new ImageResource();
+    
     /**
      * Returns an instance of <code>Resource</code> with the
      * given <code>URI</code> as the parameter.
@@ -46,45 +63,24 @@ public class ResourceFactory {
             return;
         
         try {
+        	boolean matched = false;
+        	for (Resource prototypeResource : resourcePrototypes) {
+        		if (prototypeResource.matchURI(uri)) {
+        			Resource concreteResource = prototypeResource.clone();
+        			concreteResource.initialize(uri);
+        			rmap.add(key, concreteResource);
+        			matched = true;
+        			break;
+        		}
+        	}
         	
-            if ("urn".equals(uri.getScheme())) {
-                if (uri.getSchemeSpecificPart().startsWith(ColorResource.SCHEME)) {
-                    ColorResource cr = new ColorResource(uri);
-                    rmap.add(key, cr);
-                    
-                } else if (uri.getSchemeSpecificPart().startsWith(FontResource.SCHEME)) {
-                    FontResource fr = new FontResource(uri);
-                    rmap.add(key, fr);
-                }
-            } else if (uri.getPath().endsWith("\"")
-                    && uri.getPath().lastIndexOf('"',
-                            uri.getPath().length()-1) >= 0) {
-                StringResource sr = new StringResource(uri);
-                rmap.add(key, sr);
-            } else if (uri.getPath().endsWith(".faf")) {
-                FAFileResource far = new FAFileResource(uri);
-                rmap.add(key, far);
-            } else if (uri.getPath().endsWith(".sza")) {
-                SZAResource szr = new SZAResource(uri);
-                rmap.add(key, szr);
-            } else if (uri.getPath().endsWith(".ttf")) {
-                FontResource fr = new FontResource(uri);
-                rmap.add(key, fr);
-            } else if (uri.getPath().endsWith(".wav")) {
-                AudioResource ar = new AudioResource(uri);
-                rmap.add(key, ar);
-            } else if (uri.getPath().endsWith(".ogg")) {
-                if (uri.getPath().endsWith(".video.ogg")) {
-                    VideoResource vr = new VideoResource(uri);
-                    rmap.add(key, vr);
-                } else {
-                    AudioResource ar = new AudioResource(uri);
-                    rmap.add(key, ar);
-                }
-            } else {
-                ImageResource ir = new ImageResource(uri);
-                rmap.add(key, ir);
-            }
+        	// in case URI didn't match anything else, this will always fire
+        	if (!matched) {
+        		Resource concreteImageResource = imageResourcePrototype.clone();
+        		concreteImageResource.initialize(uri);
+        		rmap.add(key, concreteImageResource);
+        	}
+      	
         } catch (Exception e) {
             logger.log(Level.WARNING, "Failed to create resource with URI: " + uri, e);
         }
