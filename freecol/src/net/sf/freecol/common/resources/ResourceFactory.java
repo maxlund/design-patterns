@@ -44,12 +44,26 @@ public class ResourceFactory {
     public static void createResource(URI uri, ResourceMapping rmap, String key) {
         if(rmap.containsKey(key))
             return;
-
+        
+        // test
+        Resource cr_prototype = new ColorResource();
         try {
+        	if (cr_prototype.matchURI(uri)) {
+        		Resource concrete_prototype = cr_prototype.clone();
+        		concrete_prototype.initialize(uri);
+        		rmap.add(key, concrete_prototype);
+        	}
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "Failed to create resource with URI: " + uri, e);
+        }
+        
+        try {
+        	
             if ("urn".equals(uri.getScheme())) {
                 if (uri.getSchemeSpecificPart().startsWith(ColorResource.SCHEME)) {
                     ColorResource cr = new ColorResource(uri);
                     rmap.add(key, cr);
+                    
                 } else if (uri.getSchemeSpecificPart().startsWith(FontResource.SCHEME)) {
                     FontResource fr = new FontResource(uri);
                     rmap.add(key, fr);

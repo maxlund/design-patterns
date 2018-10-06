@@ -40,26 +40,24 @@ public class ColorResource extends Resource {
 
     public static final String SCHEME = "color:";
 
-    private final Color color;
+    private Color color;
 
 
     public ColorResource(Color color) {
         this.color = color;
     }
 
+    public ColorResource() {}
     /**
      * Do not use directly.
      *
      * @param resourceLocator The <code>URI</code> used when loading this
      *     resource.
      */
-    public ColorResource(URI resourceLocator) throws Exception {
-        super(resourceLocator);
-
-        String colorName = resourceLocator.getSchemeSpecificPart()
-            .substring(SCHEME.length());
-        this.color = getColor(colorName);
+    public ColorResource(URI uri) throws Exception {
+    	this.initialize(uri);
     }
+    
 
 
     /**
@@ -113,5 +111,22 @@ public class ColorResource extends Resource {
         // Fall back, as there are places where a null colour
         // can cause crashes.
         return REPLACEMENT_COLOR;
+    }
+    
+    @Override
+    public boolean matchURI(URI uri) {
+    	if ("urn".equals(uri.getScheme()) 
+    			&& uri.getSchemeSpecificPart().startsWith(ColorResource.SCHEME)) {
+    		return true;
+    	}
+    	return false;
+    }
+    
+    @Override 
+    public void initialize(URI uri) {
+    	setResourceLocator(uri);
+        String colorName = uri.getSchemeSpecificPart()
+                .substring(SCHEME.length());
+            this.color = getColor(colorName);
     }
 }
