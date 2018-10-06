@@ -19,7 +19,9 @@
 
 package net.sf.freecol.common.resources;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,6 +39,7 @@ public final class ResourceMapping {
     private static final Logger logger = Logger.getLogger(ResourceMapping.class.getName());
 
     /** Mappings between an object identifier and a resource. */
+    /*
     private final HashMap<String, ColorResource> colorResources;
     private final HashMap<String, FontResource> fontResources;
     private final HashMap<String, StringResource> stringResources;
@@ -45,12 +48,27 @@ public final class ResourceMapping {
     private final HashMap<String, AudioResource> audioResources;
     private final HashMap<String, VideoResource> videoResources;
     private final HashMap<String, ImageResource> imageResources;
-
-
+    */
+    
+    private final HashMap<String, Resource> allResources;
+    private final Set<String> resourceStrings;
+    
     /**
      * Creates a new empty <code>ResourceMapping</code>.
      */
     public ResourceMapping() {
+    	allResources = new HashMap<>();
+    	// if we don't want to break the logging, we need to do something like this..
+    	resourceStrings = new HashSet<>(Arrays.asList(
+    			"color.", 
+    			"font.", 
+    			"animatedfont.",
+    			"animation.", 
+    			"sound.", 
+    			"video.", 
+    			"image."
+    			));
+    	/*
         colorResources = new HashMap<>();
         fontResources = new HashMap<>();
         stringResources = new HashMap<>();
@@ -59,6 +77,7 @@ public final class ResourceMapping {
         audioResources = new HashMap<>();
         videoResources = new HashMap<>();
         imageResources = new HashMap<>();
+        */
     }
 
 
@@ -74,6 +93,25 @@ public final class ResourceMapping {
      *     identifier in the mapping,.
      * @return true on success
      */
+    
+    public boolean add(String key, Resource r) {
+    	boolean hasMalformedKey = true;
+    	for (String s : resourceStrings) {
+    		if (key.startsWith(s)) {
+    			hasMalformedKey = false;
+    			break;
+    		}
+    	}
+    	
+    	if (!hasMalformedKey) {
+    		allResources.put(key, r);
+    	    return true;
+    	}
+    	logger.warning("Rejecting malformed resource key: " + key);
+    	return false;
+    }
+    
+    /*
     public boolean add(String key, ColorResource value) {
         if(!key.startsWith("color.")) {
             logger.warning("Rejecting malformed resource key: " + key);
@@ -141,6 +179,7 @@ public final class ResourceMapping {
         imageResources.put(key, value);
         return true;
     }
+    */
 
     /**
      * Create another mapping for a Resource under a different key.
@@ -150,6 +189,7 @@ public final class ResourceMapping {
      * @return true on success
      */
     public boolean duplicateResource(String key, String keyNew) {
+    	/*
         ColorResource cr = colorResources.get(key);
         if(cr != null) {
             return add(keyNew, cr);
@@ -182,6 +222,11 @@ public final class ResourceMapping {
         if(ir != null) {
             return add(keyNew, ir);
         }
+        */
+    	Resource r = allResources.get(key);
+    	if(r != null) {
+    		return add(keyNew, r);
+    	}
         return false;
     }
 
@@ -193,6 +238,7 @@ public final class ResourceMapping {
      */
     public void addAll(ResourceMapping rc) {
         if (rc != null) {
+        	/*
             colorResources.putAll(rc.colorResources);
             fontResources.putAll(rc.fontResources);
             stringResources.putAll(rc.stringResources);
@@ -201,6 +247,8 @@ public final class ResourceMapping {
             audioResources.putAll(rc.audioResources);
             videoResources.putAll(rc.videoResources);
             imageResources.putAll(rc.imageResources);
+            */
+        	allResources.putAll(rc.allResources);
         }
     }
 
@@ -212,6 +260,7 @@ public final class ResourceMapping {
      */
     public Map<String, Resource> getResources() {
         HashMap<String, Resource> result = new HashMap<>();
+        /*
             result.putAll(colorResources);
             result.putAll(fontResources);
             result.putAll(stringResources);
@@ -220,14 +269,22 @@ public final class ResourceMapping {
             result.putAll(audioResources);
             result.putAll(videoResources);
             result.putAll(imageResources);
+        */
+        result.putAll(allResources);
         return result;
     }
 
     public Map<String, ImageResource> getImageResources() {
+    	HashMap<String, ImageResource> imageResources = new HashMap<String, ImageResource>();
+    	for (String key : allResources.keySet()) {
+    		if (key.startsWith("image."))
+    			imageResources.put(key, (ImageResource) allResources.get(key));
+    	}
         return new HashMap<>(imageResources);
     }
 
     public boolean containsKey(String key) {
+    	/*
         return colorResources.containsKey(key)
             || fontResources.containsKey(key)
             || stringResources.containsKey(key)
@@ -236,14 +293,18 @@ public final class ResourceMapping {
             || audioResources.containsKey(key)
             || videoResources.containsKey(key)
             || imageResources.containsKey(key);
+        */
+    	return allResources.containsKey(key);
     }
 
     public boolean containsColorKey(String key) {
-        return colorResources.containsKey(key);
+        //return colorResources.containsKey(key);
+    	return containsKey(key);
     }
 
     public boolean containsImageKey(String key) {
-        return imageResources.containsKey(key);
+        //return imageResources.containsKey(key);
+    	return containsKey(key);
     }
 
     /**
@@ -252,6 +313,7 @@ public final class ResourceMapping {
      * @param key The resource identifier.
      * @return The <code>Resource</code>.
      */
+    /*
     public ColorResource getColorResource(String key) {
         return colorResources.get(key);
     }
@@ -283,6 +345,11 @@ public final class ResourceMapping {
     public ImageResource getImageResource(String key) {
         return imageResources.get(key);
     }
+    */
+    
+    public Resource getResource(String key) {
+        return allResources.get(key);
+    }
 
     /**
      * Get the image keys in this mapping with a given prefix as a list.
@@ -291,7 +358,7 @@ public final class ResourceMapping {
      * @return A list of keys.
      */
     public List<String> getImageKeys(String prefix) {
-        return imageResources.keySet().stream()
+        return allResources.keySet().stream()
             .filter(k -> k.startsWith(prefix)).collect(Collectors.toList());
     }
 
@@ -302,7 +369,7 @@ public final class ResourceMapping {
      * @return The set of keys.
      */
     public Set<String> getImageKeySet(String prefix) {
-        return imageResources.keySet().stream()
+        return allResources.keySet().stream()
             .filter(k -> k.startsWith(prefix)).collect(Collectors.toSet());
     }
 
@@ -315,7 +382,7 @@ public final class ResourceMapping {
      * @return A list of keys.
      */
     public List<String> getImageKeys(String prefix, String suffix) {
-        return imageResources.keySet().stream()
+        return allResources.keySet().stream()
             .filter(k -> k.startsWith(prefix) && k.endsWith(suffix))
             .collect(Collectors.toList());
     }

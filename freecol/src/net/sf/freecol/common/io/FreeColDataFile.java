@@ -29,7 +29,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Arrays;
+//import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
@@ -40,7 +40,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.sf.freecol.common.resources.ResourceFactory;
-import net.sf.freecol.common.resources.ResourceMapper;
+//import net.sf.freecol.common.resources.ResourceMapper;
 import net.sf.freecol.common.resources.ResourceMapping;
 import net.sf.freecol.common.util.LogBuilder;
 import static net.sf.freecol.common.util.CollectionUtils.*;
@@ -227,10 +227,10 @@ public class FreeColDataFile {
             }
         }
 
-        ResourceMapping rc = new ResourceMapping();
+        ResourceMapping rmap = new ResourceMapping();
         List<String> todo = new ArrayList<>();
         Enumeration<?> pn = properties.propertyNames();
-        ResourceMapper rm = new ResourceMapper(rc);
+        //ResourceMapper rm = new ResourceMapper(rc);
         while (pn.hasMoreElements()) {
             final String key = (String) pn.nextElement();
             final String value = properties.getProperty(key);
@@ -239,8 +239,8 @@ public class FreeColDataFile {
             } else {
                 URI uri = getURI(value);
                 if (uri != null) {
-                    rm.setKey(key);
-                    ResourceFactory.createResource(uri, rm);
+                    //rm.setKey(key);
+                    ResourceFactory.createResource(uri, rmap, key);
                 }
             }
         }
@@ -253,7 +253,7 @@ public class FreeColDataFile {
                 final String key = todo.remove(0);
                 final String value = properties.getProperty(key)
                     .substring(resourceScheme.length());
-                if (!rc.duplicateResource(value, key)) {
+                if (!rmap.duplicateResource(value, key)) {
                     miss.add(key);
                 } else {
                     progress = true;
@@ -266,7 +266,7 @@ public class FreeColDataFile {
                    join(" ", todo));
         }
         if (lb.grew()) lb.log(logger, Level.INFO);
-        return rc;
+        return rmap;
     }
 
     /**

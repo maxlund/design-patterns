@@ -36,7 +36,6 @@ public final class ResourceMapper implements ResourceFactory.ResourceSink {
         this.key = key;
     }
 
-
     @Override
     public void add(ColorResource r) {
         resourceMapping.add(key, r);
@@ -76,5 +75,4 @@ public final class ResourceMapper implements ResourceFactory.ResourceSink {
     public void add(ImageResource r) {
         resourceMapping.add(key, r);
     }
-
 }

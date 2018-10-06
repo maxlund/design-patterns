@@ -301,7 +301,7 @@ public class ResourceManager {
      *     resource key and type, or else <code>null</code>.
      */
     private static synchronized ColorResource getColorResource(final String key) {
-        final ColorResource r = mergedContainer.getColorResource(key);
+        final ColorResource r = (ColorResource) mergedContainer.getResource(key);
         if (r == null) {
             logger.warning("getColorResource(" + key + ") failed");
         }
@@ -309,7 +309,7 @@ public class ResourceManager {
     }
 
     private static synchronized FontResource getFontResource(final String key) {
-        final FontResource r = mergedContainer.getFontResource(key);
+        final FontResource r = (FontResource) mergedContainer.getResource(key);
         if (r == null) {
             logger.warning("getFontResource(" + key + ") failed");
         }
@@ -317,7 +317,7 @@ public class ResourceManager {
     }
 
     private static synchronized StringResource getStringResource(final String key) {
-        final StringResource r = mergedContainer.getStringResource(key);
+        final StringResource r = (StringResource) mergedContainer.getResource(key);
         if (r == null) {
             logger.warning("getStringResource(" + key + ") failed");
         }
@@ -325,7 +325,7 @@ public class ResourceManager {
     }
 
     private static synchronized FAFileResource getFAFileResource(final String key) {
-        final FAFileResource r = mergedContainer.getFAFileResource(key);
+        final FAFileResource r = (FAFileResource) mergedContainer.getResource(key);
         if (r == null) {
             logger.warning("getFAFileResource(" + key + ") failed");
         }
@@ -333,7 +333,7 @@ public class ResourceManager {
     }
 
     private static synchronized SZAResource getSZAResource(final String key) {
-        final SZAResource r = mergedContainer.getSZAResource(key);
+        final SZAResource r = (SZAResource) mergedContainer.getResource(key);
         if (r == null) {
             logger.warning("getSZAResource(" + key + ") failed");
         }
@@ -341,7 +341,7 @@ public class ResourceManager {
     }
 
     private static synchronized AudioResource getAudioResource(final String key) {
-        final AudioResource r = mergedContainer.getAudioResource(key);
+        final AudioResource r = (AudioResource) mergedContainer.getResource(key);
         if (r == null) {
             logger.warning("getAudioResource(" + key + ") failed");
         }
@@ -349,7 +349,7 @@ public class ResourceManager {
     }
 
     private static synchronized VideoResource getVideoResource(final String key) {
-        final VideoResource r = mergedContainer.getVideoResource(key);
+        final VideoResource r = (VideoResource) mergedContainer.getResource(key);
         if (r == null) {
             logger.warning("getVideoResource(" + key + ") failed");
         }
@@ -357,10 +357,10 @@ public class ResourceManager {
     }
 
     private static synchronized ImageResource getImageResource(final String key) {
-        ImageResource r = mergedContainer.getImageResource(key);
+        ImageResource r = (ImageResource) mergedContainer.getResource(key);
         if (r == null) {
             logger.warning("getImageResource(" + key + ") failed");
-            r = mergedContainer.getImageResource(REPLACEMENT_IMAGE);
+            r = (ImageResource) mergedContainer.getResource(REPLACEMENT_IMAGE);
             if(r == null) {
                 FreeColClient.fatal("Failed getting replacement image.");
             }
