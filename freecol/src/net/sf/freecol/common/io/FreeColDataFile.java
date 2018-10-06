@@ -29,7 +29,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLConnection;
 import java.util.ArrayList;
-//import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
@@ -40,7 +39,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.sf.freecol.common.resources.ResourceFactory;
-//import net.sf.freecol.common.resources.ResourceMapper;
 import net.sf.freecol.common.resources.ResourceMapping;
 import net.sf.freecol.common.util.LogBuilder;
 import static net.sf.freecol.common.util.CollectionUtils.*;
@@ -230,7 +228,6 @@ public class FreeColDataFile {
         ResourceMapping rmap = new ResourceMapping();
         List<String> todo = new ArrayList<>();
         Enumeration<?> pn = properties.propertyNames();
-        //ResourceMapper rm = new ResourceMapper(rc);
         while (pn.hasMoreElements()) {
             final String key = (String) pn.nextElement();
             final String value = properties.getProperty(key);
@@ -239,7 +236,6 @@ public class FreeColDataFile {
             } else {
                 URI uri = getURI(value);
                 if (uri != null) {
-                    //rm.setKey(key);
                     ResourceFactory.createResource(uri, rmap, key);
                 }
             }

@@ -38,27 +38,17 @@ public final class ResourceMapping {
 
     private static final Logger logger = Logger.getLogger(ResourceMapping.class.getName());
 
-    /** Mappings between an object identifier and a resource. */
-    /*
-    private final HashMap<String, ColorResource> colorResources;
-    private final HashMap<String, FontResource> fontResources;
-    private final HashMap<String, StringResource> stringResources;
-    private final HashMap<String, FAFileResource> fafResources;
-    private final HashMap<String, SZAResource> szaResources;
-    private final HashMap<String, AudioResource> audioResources;
-    private final HashMap<String, VideoResource> videoResources;
-    private final HashMap<String, ImageResource> imageResources;
-    */
-    
+    /** Mappings between an object identifier and a resource. */    
     private final HashMap<String, Resource> allResources;
-    private final Set<String> resourceStrings;
+
+    private final Set<String> resourceStrings;  // stuff that resource identifiers starts with
     
     /**
      * Creates a new empty <code>ResourceMapping</code>.
      */
     public ResourceMapping() {
     	allResources = new HashMap<>();
-    	// if we don't want to break the logging, we need to do something like this..
+    	// if we don't want to break the logging, we need to have something like this i think
     	resourceStrings = new HashSet<>(Arrays.asList(
     			"color.", 
     			"font.", 
@@ -68,16 +58,6 @@ public final class ResourceMapping {
     			"video.", 
     			"image."
     			));
-    	/*
-        colorResources = new HashMap<>();
-        fontResources = new HashMap<>();
-        stringResources = new HashMap<>();
-        fafResources = new HashMap<>();
-        szaResources = new HashMap<>();
-        audioResources = new HashMap<>();
-        videoResources = new HashMap<>();
-        imageResources = new HashMap<>();
-        */
     }
 
 
@@ -110,76 +90,6 @@ public final class ResourceMapping {
     	logger.warning("Rejecting malformed resource key: " + key);
     	return false;
     }
-    
-    /*
-    public boolean add(String key, ColorResource value) {
-        if(!key.startsWith("color.")) {
-            logger.warning("Rejecting malformed resource key: " + key);
-            return false;
-        }
-        colorResources.put(key, value);
-        return true;
-    }
-
-    public boolean add(String key, FontResource value) {
-        if(!key.startsWith("font.")) {
-            logger.warning("Rejecting malformed resource key: " + key);
-            return false;
-        }
-        fontResources.put(key, value);
-        return true;
-    }
-
-    public boolean add(String key, StringResource value) {
-        stringResources.put(key, value);
-        return true;
-    }
-
-    public boolean add(String key, FAFileResource value) {
-        if(!key.startsWith("animatedfont.")) {
-            logger.warning("Rejecting malformed resource key: " + key);
-            return false;
-        }
-        fafResources.put(key, value);
-        return true;
-    }
-
-    public boolean add(String key, SZAResource value) {
-        if(!key.startsWith("animation.")) {
-            logger.warning("Rejecting malformed resource key: " + key);
-            return false;
-        }
-        szaResources.put(key, value);
-        return true;
-    }
-
-    public boolean add(String key, AudioResource value) {
-        if(!key.startsWith("sound.")) {
-            logger.warning("Rejecting malformed resource key: " + key);
-            return false;
-        }
-        audioResources.put(key, value);
-        return true;
-    }
-
-    public boolean add(String key, VideoResource value) {
-        if(!key.startsWith("video.")) {
-            logger.warning("Rejecting malformed resource key: " + key);
-            return false;
-        }
-        videoResources.put(key, value);
-        return true;
-    }
-
-    public boolean add(String key, ImageResource value) {
-        if(!key.startsWith("image.")) {
-            logger.warning("Rejecting malformed resource key: " + key);
-            return false;
-        }
-        imageResources.put(key, value);
-        return true;
-    }
-    */
 
     /**
      * Create another mapping for a Resource under a different key.
@@ -189,40 +99,6 @@ public final class ResourceMapping {
      * @return true on success
      */
     public boolean duplicateResource(String key, String keyNew) {
-    	/*
-        ColorResource cr = colorResources.get(key);
-        if(cr != null) {
-            return add(keyNew, cr);
-        }
-        FontResource fr = fontResources.get(key);
-        if(fr != null) {
-            return add(keyNew, fr);
-        }
-        StringResource sr = stringResources.get(key);
-        if(sr != null) {
-            return add(keyNew, sr);
-        }
-        FAFileResource far = fafResources.get(key);
-        if(far != null) {
-            return add(keyNew, far);
-        }
-        SZAResource szr = szaResources.get(key);
-        if(szr != null) {
-            return add(keyNew, szr);
-        }
-        AudioResource ar = audioResources.get(key);
-        if(ar != null) {
-            return add(keyNew, ar);
-        }
-        VideoResource vr = videoResources.get(key);
-        if(vr != null) {
-            return add(keyNew, vr);
-        }
-        ImageResource ir = imageResources.get(key);
-        if(ir != null) {
-            return add(keyNew, ir);
-        }
-        */
     	Resource r = allResources.get(key);
     	if(r != null) {
     		return add(keyNew, r);
@@ -238,16 +114,6 @@ public final class ResourceMapping {
      */
     public void addAll(ResourceMapping rc) {
         if (rc != null) {
-        	/*
-            colorResources.putAll(rc.colorResources);
-            fontResources.putAll(rc.fontResources);
-            stringResources.putAll(rc.stringResources);
-            fafResources.putAll(rc.fafResources);
-            szaResources.putAll(rc.szaResources);
-            audioResources.putAll(rc.audioResources);
-            videoResources.putAll(rc.videoResources);
-            imageResources.putAll(rc.imageResources);
-            */
         	allResources.putAll(rc.allResources);
         }
     }
@@ -260,16 +126,6 @@ public final class ResourceMapping {
      */
     public Map<String, Resource> getResources() {
         HashMap<String, Resource> result = new HashMap<>();
-        /*
-            result.putAll(colorResources);
-            result.putAll(fontResources);
-            result.putAll(stringResources);
-            result.putAll(fafResources);
-            result.putAll(szaResources);
-            result.putAll(audioResources);
-            result.putAll(videoResources);
-            result.putAll(imageResources);
-        */
         result.putAll(allResources);
         return result;
     }
@@ -284,26 +140,14 @@ public final class ResourceMapping {
     }
 
     public boolean containsKey(String key) {
-    	/*
-        return colorResources.containsKey(key)
-            || fontResources.containsKey(key)
-            || stringResources.containsKey(key)
-            || fafResources.containsKey(key)
-            || szaResources.containsKey(key)
-            || audioResources.containsKey(key)
-            || videoResources.containsKey(key)
-            || imageResources.containsKey(key);
-        */
     	return allResources.containsKey(key);
     }
 
     public boolean containsColorKey(String key) {
-        //return colorResources.containsKey(key);
     	return containsKey(key);
     }
 
     public boolean containsImageKey(String key) {
-        //return imageResources.containsKey(key);
     	return containsKey(key);
     }
 
@@ -313,40 +157,6 @@ public final class ResourceMapping {
      * @param key The resource identifier.
      * @return The <code>Resource</code>.
      */
-    /*
-    public ColorResource getColorResource(String key) {
-        return colorResources.get(key);
-    }
-
-    public FontResource getFontResource(String key) {
-        return fontResources.get(key);
-    }
-
-    public StringResource getStringResource(String key) {
-        return stringResources.get(key);
-    }
-
-    public FAFileResource getFAFileResource(String key) {
-        return fafResources.get(key);
-    }
-
-    public SZAResource getSZAResource(String key) {
-        return szaResources.get(key);
-    }
-
-    public AudioResource getAudioResource(String key) {
-        return audioResources.get(key);
-    }
-
-    public VideoResource getVideoResource(String key) {
-        return videoResources.get(key);
-    }
-
-    public ImageResource getImageResource(String key) {
-        return imageResources.get(key);
-    }
-    */
-    
     public Resource getResource(String key) {
         return allResources.get(key);
     }
