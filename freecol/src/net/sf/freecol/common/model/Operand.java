@@ -19,8 +19,6 @@
 
 package net.sf.freecol.common.model;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.logging.Logger;
 
 import javax.xml.stream.XMLStreamException;
@@ -48,16 +46,12 @@ public class Operand extends Scope {
 
     private static final Logger logger = Logger.getLogger(Operand.class.getName());
 
-    public static enum OperandType {
-        UNITS, BUILDINGS, SETTLEMENTS, FOUNDING_FATHERS, YEAR, OPTION, NONE
-    }
-
     public static enum ScopeLevel {
         SETTLEMENT, PLAYER, GAME, NONE
     }
 
     /** The type of object the operand really represents. */
-    private OperandType operandType = OperandType.NONE;
+    private OperandStrategy operandStrategy = new OperandStrategyNone();
 
     /** How broadly to apply the operand. */
     private ScopeLevel scopeLevel = ScopeLevel.NONE;
@@ -83,11 +77,11 @@ public class Operand extends Scope {
     /**
      * Creates a new <code>Operand</code> instance.
      *
-     * @param operandType The <code>OperandType</code> to use.
+     * @param operandStrategy The <code>OperandStrategy</code> to use.
      * @param scopeLevel The <code>ScopeLevel</code> to use.
      */
-    public Operand(OperandType operandType, ScopeLevel scopeLevel) {
-        this.operandType = operandType;
+    public Operand(OperandStrategy operandStrategy, ScopeLevel scopeLevel) {
+        this.operandStrategy = operandStrategy;
         this.scopeLevel = scopeLevel;
     }
 
@@ -103,21 +97,21 @@ public class Operand extends Scope {
 
 
     /**
-     * Gets the operand type.
+     * Gets the operand strategy.
      *
-     * @return The <code>OperandType</code>.
+     * @return The <code>OperandStrategy</code>.
      */
-    public final OperandType getOperandType() {
-        return operandType;
+    public final OperandStrategy getOperandStrategy() {
+        return operandStrategy;
     }
 
     /**
-     * Set the operand type.
+     * Set the operand strategy.
      *
-     * @param newOperandType The new <code>OperandType</code>.
+     * @param newOperandStrategy The new <code>OperandStrategy</code>.
      */
-    public final void setOperandType(final OperandType newOperandType) {
-        this.operandType = newOperandType;
+    public final void setOperandType(final OperandStrategy newOperandStrategy) {
+        this.operandStrategy = newOperandStrategy;
     }
 
     /**
@@ -164,51 +158,11 @@ public class Operand extends Scope {
      */
     public Integer getValue(Game game) {
         return (value != null) ? value
-            : (scopeLevel == ScopeLevel.GAME) ? calculateGameValue(game)
+            : (scopeLevel == ScopeLevel.GAME) ? operandStrategy.calculateGameValue(game)
             : null;
     }
 
-    /**
-     * Calculate the operand value within a given game.
-     *
-     * @param game The <code>Game</code> to check.
-     * @return The operand value.
-     */
-    private Integer calculateGameValue(Game game) {
-        final String methodName = getMethodName();
-        switch (operandType) {
-        case NONE:
-            return game.invokeMethod(methodName, Integer.class, 0);
-        case YEAR:
-            return game.getTurn().getYear();
-        case OPTION:
-            return game.getSpecification().getInteger(getType());
-        default:
-            List<FreeColObject> list = new LinkedList<>();
-            for (Player player : game.getLivePlayers(null)) {
-                switch (operandType) {
-                case UNITS:
-                    list.addAll(player.getUnits());
-                    break;
-                case BUILDINGS:
-                    for (Colony colony : player.getColonies()) {
-                        list.addAll(colony.getBuildings());
-                    }
-                    break;
-                case SETTLEMENTS:
-                    list.addAll(player.getSettlements());
-                    break;
-                case FOUNDING_FATHERS:
-                    list.addAll(player.getFathers());
-                    break;
-                default:
-                    return null;
-                }
-            }
-            return count(list);
-        }
-    }
-
+ 
     /**
      * Gets the operand value if it is applicable to the given Player.
      *
@@ -221,42 +175,9 @@ public class Operand extends Scope {
         case GAME:
             return getValue(player.getGame());
         case PLAYER: // Real case, handled below
-            break;
+            return operandStrategy.calculatePlayerValue(player);
         default: // Inapplicable
             return null;
-        }
-
-        final Specification spec = player.getSpecification();
-        final String methodName = getMethodName();
-        List<FreeColObject> list = new LinkedList<>();
-        switch (operandType) {
-        case UNITS:
-            return count(player.getUnits());
-        case BUILDINGS:
-            for (Colony colony : player.getColonies()) {
-                list.addAll(colony.getBuildings());
-            }
-            return count(list);
-        case SETTLEMENTS:
-            if (methodName == null) {
-                return count(player.getSettlements())
-                    + spec.getInteger(GameOptions.SETTLEMENT_LIMIT_MODIFIER);
-            } else {
-                final String methodValue = getMethodValue();
-                int result = 0;
-                for (Settlement settlement : player.getSettlements()) {
-                    Boolean b = settlement.invokeMethod(methodName,
-                        Boolean.class, Boolean.FALSE);
-                    if (String.valueOf(b).equals(methodValue)) result++;
-                }
-                return result;
-            }
-        case FOUNDING_FATHERS:
-            list.addAll(player.getFathers());
-            return count(list);
-        default:
-            return player.invokeMethod(methodName, Integer.class,
-                                       (Integer)null);
         }
     }
 
@@ -270,20 +191,7 @@ public class Operand extends Scope {
         if (value == null) {
             if (scopeLevel == ScopeLevel.SETTLEMENT
                 && settlement instanceof Colony) {
-                Colony colony = (Colony) settlement;
-                List<FreeColObject> list = new LinkedList<>();
-                switch(operandType) {
-                case UNITS:
-                    list.addAll(colony.getUnitList());
-                    break;
-                case BUILDINGS:
-                    list.addAll(colony.getBuildings());
-                    break;
-                default:
-                    return colony.invokeMethod(getMethodName(), Integer.class,
-                                               (Integer)null);
-                }
-                return count(list);
+                return operandStrategy.calculateSettlementValue(settlement);
             } else {
                 // in future, we might expand this to handle native
                 // settlements
@@ -294,26 +202,8 @@ public class Operand extends Scope {
         }
     }
 
-    /**
-     * Count the number of objects in a list that this operand is
-     * applicable to.
-     *
-     * @param objects The list of objects to check.
-     * @return The number of applicable objects.
-     */
-    private int count(List<? extends FreeColObject> objects) {
-        int result = 0;
-        for (FreeColObject object : objects) {
-            if (appliesTo(object)) {
-                result++;
-            }
-        }
-        return result;
-    }
-
-
     // Interface Object
-
+    // TODO: FIXME
     /**
      * {@inheritDoc}
      */
@@ -321,15 +211,15 @@ public class Operand extends Scope {
     public boolean equals(Object o) {
         return this == o
             || (o instanceof Operand
-                && operandType == ((Operand)o).operandType
+                && operandStrategy == ((Operand)o).operandStrategy
                 && scopeLevel == ((Operand)o).scopeLevel
                 && Utils.equals(value, ((Operand)o).value)
                 && super.equals(o));
     }
 
-
+    // TODO: FIXME
     // Serialization
-
+    /*
     private static final String OPERAND_TYPE_TAG = "operand-type";
     private static final String SCOPE_LEVEL_TAG = "scope-level";
     // @compat 0.11.3
@@ -337,10 +227,11 @@ public class Operand extends Scope {
     private static final String OLD_SCOPE_LEVEL_TAG = "scopeLevel";
     // end @compat 0.11.3
 
-
+    */
     /**
      * {@inheritDoc}
      */
+    /*
     @Override
     protected void writeAttributes(FreeColXMLWriter xw) throws XMLStreamException {
         super.writeAttributes(xw);
@@ -353,10 +244,12 @@ public class Operand extends Scope {
             xw.writeAttribute(VALUE_TAG, value);
         }
     }
+    */
 
     /**
      * {@inheritDoc}
      */
+    /*
     @Override
     protected void readAttributes(FreeColXMLReader xr) throws XMLStreamException {
         super.readAttributes(xr);
@@ -382,10 +275,11 @@ public class Operand extends Scope {
         int val = xr.getAttribute(VALUE_TAG, INFINITY);
         if (val != INFINITY) value = val;
     }
-
+    */
     /**
      * {@inheritDoc}
      */
+    /*
     @Override
     public String toString() {
         if (value != null) return Integer.toString(value);
@@ -394,6 +288,6 @@ public class Operand extends Scope {
             .append(" scopeLevel=").append(scopeLevel);
         return super.toString().replaceFirst("^[^ ]*", sb.toString());
     }
-
+    */
     // getXMLElementTagName apparently not needed, uses parents.
 }
