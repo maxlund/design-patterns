@@ -22,7 +22,7 @@ package net.sf.freecol.common.model;
 import org.junit.After;
 
 import net.sf.freecol.common.model.GameOptions;
-import net.sf.freecol.common.model.Operand.OperandType;
+// import net.sf.freecol.common.model.Operand.OperandType;
 import net.sf.freecol.common.model.Operand.ScopeLevel;
 import net.sf.freecol.common.option.IntegerOption;
 import net.sf.freecol.server.model.ServerBuilding;
@@ -37,7 +37,7 @@ public class LimitTest extends FreeColTestCase {
 		UnitType frigate = spec().getUnitType("model.unit.frigate");
 
 		Operand operand = new Operand();
-		assertEquals(OperandType.NONE, operand.getOperandType());
+		assertTrue(operand.getOperandStrategy() instanceof OperandStrategyNone );
 		assertEquals(ScopeLevel.NONE, operand.getScopeLevel());
 
 		operand.setType("model.unit.frigate");
@@ -98,8 +98,8 @@ public class LimitTest extends FreeColTestCase {
 
 		assertNotNull(rebelLimit);
 		assertEquals(Limit.Operator.GE, rebelLimit.getOperator());
-		assertEquals(Operand.OperandType.NONE, rebelLimit.getLeftHandSide()
-				.getOperandType());
+		assertTrue(rebelLimit.getLeftHandSide()
+				.getOperandStrategy() instanceof OperandStrategyNone );
 		assertEquals(Operand.ScopeLevel.PLAYER, rebelLimit.getLeftHandSide()
 				.getScopeLevel());
 		assertEquals(Integer.valueOf(0),
@@ -110,8 +110,7 @@ public class LimitTest extends FreeColTestCase {
 
 		assertNotNull(colonyLimit);
 		assertEquals(Limit.Operator.GE, colonyLimit.getOperator());
-		assertEquals(Operand.OperandType.SETTLEMENTS, colonyLimit
-				.getLeftHandSide().getOperandType());
+		assertTrue(colonyLimit.getLeftHandSide().getOperandStrategy() instanceof OperandStrategySettlements);
 		assertEquals(Operand.ScopeLevel.PLAYER, colonyLimit.getLeftHandSide()
 				.getScopeLevel());
 		assertEquals("isConnectedPort", colonyLimit.getLeftHandSide()
@@ -125,10 +124,10 @@ public class LimitTest extends FreeColTestCase {
 
 		assertNotNull(yearLimit);
 		assertEquals(Limit.Operator.LE, yearLimit.getOperator());
-		assertEquals(Operand.OperandType.YEAR, yearLimit.getLeftHandSide()
-				.getOperandType());
-		assertEquals(Operand.OperandType.OPTION, yearLimit.getRightHandSide()
-				.getOperandType());
+		assertTrue(yearLimit.getLeftHandSide()
+				.getOperandStrategy() instanceof OperandStrategyYear);
+		assertTrue(yearLimit.getRightHandSide()
+				.getOperandStrategy() instanceof OperandStrategyOption);
 		assertEquals(GameOptions.LAST_COLONIAL_YEAR, yearLimit
 				.getRightHandSide().getType());
 		assertEquals(Integer.valueOf(1492), yearLimit.getLeftHandSide()
@@ -189,8 +188,8 @@ public class LimitTest extends FreeColTestCase {
 
 		assertNotNull(strongestPlayerLimit);
 		assertEquals(Limit.Operator.GT, strongestPlayerLimit.getOperator());
-		assertEquals(Operand.OperandType.NONE, strongestPlayerLimit
-				.getLeftHandSide().getOperandType());
+		assertTrue(strongestPlayerLimit.getLeftHandSide().getOperandStrategy()
+				instanceof OperandStrategyNone);
 		assertEquals(Operand.ScopeLevel.PLAYER, strongestPlayerLimit
 				.getLeftHandSide().getScopeLevel());
 		assertEquals(Integer.valueOf(0), strongestPlayerLimit.getLeftHandSide()
@@ -201,8 +200,8 @@ public class LimitTest extends FreeColTestCase {
 
 		assertNotNull(weakestPlayerLimit);
 		assertEquals(Limit.Operator.LT, weakestPlayerLimit.getOperator());
-		assertEquals(Operand.OperandType.NONE, weakestPlayerLimit
-				.getLeftHandSide().getOperandType());
+		assertTrue(weakestPlayerLimit.getLeftHandSide().getOperandStrategy() 
+				instanceof OperandStrategyNone);
 		assertEquals(Operand.ScopeLevel.PLAYER, weakestPlayerLimit
 				.getLeftHandSide().getScopeLevel());
 		assertEquals(Integer.valueOf(0), weakestPlayerLimit.getLeftHandSide()
@@ -213,8 +212,8 @@ public class LimitTest extends FreeColTestCase {
 
 		assertNotNull(yearLimit);
 		assertEquals(Limit.Operator.GE, yearLimit.getOperator());
-		assertEquals(Operand.OperandType.YEAR, yearLimit.getLeftHandSide()
-				.getOperandType());
+		assertTrue(yearLimit.getLeftHandSide().getOperandStrategy() 
+				instanceof OperandStrategyYear);
 		assertEquals(Operand.ScopeLevel.GAME, yearLimit.getLeftHandSide()
 				.getScopeLevel());
 		assertEquals(Integer.valueOf(1492), yearLimit.getLeftHandSide()

@@ -211,7 +211,7 @@ public class Operand extends Scope {
     public boolean equals(Object o) {
         return this == o
             || (o instanceof Operand
-                && operandStrategy == ((Operand)o).operandStrategy
+                && operandStrategy.getClass() == ((Operand)o).operandStrategy.getClass()
                 && scopeLevel == ((Operand)o).scopeLevel
                 && Utils.equals(value, ((Operand)o).value)
                 && super.equals(o));
